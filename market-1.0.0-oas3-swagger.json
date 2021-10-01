@@ -1,0 +1,686 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "description" : "Сервер получения информации по рынку игрового телеграмм-бота Bastion Siege 2 \n[@Bastion Siege 2](http://swagger.io).\n",
+    "version" : "1.0.0-oas3",
+    "title" : "Bastion Siege 2 Market"
+  },
+  "tags" : [ {
+    "name" : "market",
+    "description" : "Получение данных по рынку"
+  }, {
+    "name" : "auth",
+    "description" : "Идентификационная информация"
+  } ],
+  "paths" : {
+    "/{res}/raw" : {
+      "get" : {
+        "tags" : [ "market" ],
+        "summary" : "Полные данные по ресурсу",
+        "description" : "Получение полных данных с рынка по запрашиваемому ресурсу",
+        "operationId" : "getRawData",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/resParam"
+        }, {
+          "$ref" : "#/components/parameters/limitParam"
+        }, {
+          "$ref" : "#/components/parameters/fromParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "oneOf" : [ {
+                    "type" : "object",
+                    "properties" : {
+                      "wood" : {
+                        "$ref" : "#/components/schemas/RawDataArray"
+                      }
+                    }
+                  }, {
+                    "type" : "object",
+                    "properties" : {
+                      "stone" : {
+                        "$ref" : "#/components/schemas/RawDataArray"
+                      }
+                    }
+                  }, {
+                    "type" : "object",
+                    "properties" : {
+                      "food" : {
+                        "$ref" : "#/components/schemas/RawDataArray"
+                      }
+                    }
+                  }, {
+                    "type" : "object",
+                    "properties" : {
+                      "horses" : {
+                        "$ref" : "#/components/schemas/RawDataArray"
+                      }
+                    }
+                  } ],
+                  "example" : {
+                    "wood" : [ {
+                      "date" : "2021-09-27T17:50:01",
+                      "price" : 2.415,
+                      "volume" : 344000
+                    }, {
+                      "date" : "2021-09-27T17:49:05",
+                      "price" : 2.4,
+                      "volume" : 344000
+                    } ]
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Невалидный ключ(token) доступа."
+          },
+          "404" : {
+            "description" : "Ресурс не найден (неверное имя запрашиваемого ресурса)."
+          }
+        },
+        "security" : [ {
+          "Token" : [ ]
+        } ]
+      }
+    },
+    "/{res}/grouped" : {
+      "get" : {
+        "tags" : [ "market" ],
+        "summary" : "Сгруппированные данные по ресурсу",
+        "description" : "Получение данных с рынка по запрашиваемому ресурсу, сгруппированных по интервалам времени",
+        "operationId" : "getGroupedData",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/resParam"
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "description" : "Сгруппировать на заданном интервале времени(*сек.*)",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "minimum" : 5,
+            "maximum" : 2678400,
+            "default" : 60
+          }
+        }, {
+          "$ref" : "#/components/parameters/limitParam"
+        }, {
+          "$ref" : "#/components/parameters/fromParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "oneOf" : [ {
+                    "type" : "object",
+                    "properties" : {
+                      "wood" : {
+                        "$ref" : "#/components/schemas/GroupedDataArray"
+                      }
+                    }
+                  }, {
+                    "type" : "object",
+                    "properties" : {
+                      "stone" : {
+                        "$ref" : "#/components/schemas/GroupedDataArray"
+                      }
+                    }
+                  }, {
+                    "type" : "object",
+                    "properties" : {
+                      "food" : {
+                        "$ref" : "#/components/schemas/GroupedDataArray"
+                      }
+                    }
+                  }, {
+                    "type" : "object",
+                    "properties" : {
+                      "horses" : {
+                        "$ref" : "#/components/schemas/GroupedDataArray"
+                      }
+                    }
+                  } ],
+                  "example" : {
+                    "stone" : [ {
+                      "date_open" : "2021-09-27T20:20:00",
+                      "date_close" : "2021-09-27T20:21:00",
+                      "price" : 3.829,
+                      "vol_min" : 2756011,
+                      "vol_max" : 2756011,
+                      "vol_close" : 2756011,
+                      "vol_open" : 2756011
+                    }, {
+                      "date_open" : "2021-09-27T20:21:00",
+                      "date_close" : "2021-09-27T20:22:00",
+                      "price" : 3.845,
+                      "vol_min" : 2756011,
+                      "vol_max" : 3056011,
+                      "vol_close" : 3056011,
+                      "vol_open" : 2756011
+                    } ]
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Невалидный ключ(token) доступа."
+          },
+          "404" : {
+            "description" : "Ресурс не найден (неверное имя запрашиваемого ресурса)."
+          }
+        },
+        "security" : [ {
+          "Token" : [ ]
+        } ]
+      }
+    },
+    "/{res}/average" : {
+      "get" : {
+        "tags" : [ "market" ],
+        "summary" : "Объем \"перелома\" рынка",
+        "description" : "25% от среднего максимумов объема за предыдущие 7 дней. При зменении объема ресурса на рынке выше или ниже этой величины происходит смена направления измения цены(*рост/падение*).",
+        "operationId" : "getAverageData",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/resParam"
+        }, {
+          "name" : "day",
+          "in" : "query",
+          "description" : "Получить данные за определенный день.\\\n**Дата** в формате ISO.\n",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "example" : "2021-09-11"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "oneOf" : [ {
+                    "oneOf" : [ {
+                      "type" : "object",
+                      "properties" : {
+                        "wood" : {
+                          "$ref" : "#/components/schemas/AverageDataArray"
+                        }
+                      }
+                    }, {
+                      "type" : "object",
+                      "properties" : {
+                        "stone" : {
+                          "$ref" : "#/components/schemas/AverageDataArray"
+                        }
+                      }
+                    }, {
+                      "type" : "object",
+                      "properties" : {
+                        "food" : {
+                          "$ref" : "#/components/schemas/AverageDataArray"
+                        }
+                      }
+                    }, {
+                      "type" : "object",
+                      "properties" : {
+                        "horses" : {
+                          "$ref" : "#/components/schemas/AverageDataArray"
+                        }
+                      }
+                    } ]
+                  }, {
+                    "oneOf" : [ {
+                      "type" : "object",
+                      "properties" : {
+                        "wood" : {
+                          "$ref" : "#/components/schemas/AverageData"
+                        }
+                      }
+                    }, {
+                      "type" : "object",
+                      "properties" : {
+                        "stone" : {
+                          "$ref" : "#/components/schemas/AverageData"
+                        }
+                      }
+                    }, {
+                      "type" : "object",
+                      "properties" : {
+                        "food" : {
+                          "$ref" : "#/components/schemas/AverageData"
+                        }
+                      }
+                    }, {
+                      "type" : "object",
+                      "properties" : {
+                        "horses" : {
+                          "$ref" : "#/components/schemas/AverageData"
+                        }
+                      }
+                    } ]
+                  } ]
+                },
+                "examples" : {
+                  "single" : {
+                    "value" : {
+                      "wood" : {
+                        "date" : "2021-04-24",
+                        "limit" : 8078441
+                      }
+                    },
+                    "summary" : "Значение для одного дня"
+                  },
+                  "multiple" : {
+                    "value" : {
+                      "wood" : [ {
+                        "date" : "2021-04-03",
+                        "limit" : 3994578
+                      }, {
+                        "date" : "2021-04-04",
+                        "limit" : 3876723
+                      }, {
+                        "date" : "2021-04-05",
+                        "limit" : 3929682
+                      } ]
+                    },
+                    "summary" : "Массив значений по дням"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Невалидный ключ(token) доступа."
+          },
+          "404" : {
+            "description" : "Ресурс не найден (неверное имя запрашиваемого ресурса)."
+          }
+        },
+        "security" : [ {
+          "Token" : [ ]
+        } ]
+      }
+    },
+    "/updates" : {
+      "get" : {
+        "tags" : [ "market" ],
+        "summary" : "Получение обновлений рынка",
+        "description" : "Long poll изменений происходящих на рынке.\\\nТаймаут соединения: **30 сек**.\n",
+        "operationId" : "getUpdates",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/fromParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "wood" : {
+                      "$ref" : "#/components/schemas/RawDataArray"
+                    },
+                    "stone" : {
+                      "$ref" : "#/components/schemas/RawDataArray"
+                    },
+                    "food" : {
+                      "$ref" : "#/components/schemas/RawDataArray"
+                    },
+                    "horses" : {
+                      "$ref" : "#/components/schemas/RawDataArray"
+                    }
+                  },
+                  "example" : {
+                    "food" : [ {
+                      "date" : "2021-09-28T12:17:40",
+                      "price" : 0.79,
+                      "volume" : 47049561
+                    } ],
+                    "horses" : [ {
+                      "date" : "2021-09-28T12:17:20",
+                      "price" : 16.985,
+                      "volume" : 0
+                    } ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "Token" : [ ]
+        } ]
+      }
+    },
+    "/market" : {
+      "get" : {
+        "deprecated" : true,
+        "tags" : [ "market" ],
+        "summary" : "Данные по ресурсу",
+        "description" : "Получение данных с рынка по запрашиваемому ресурсу",
+        "operationId" : "getMarket",
+        "parameters" : [ {
+          "name" : "res",
+          "in" : "query",
+          "description" : "Название ресурса",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/ResName"
+          }
+        }, {
+          "name" : "group",
+          "in" : "query",
+          "description" : "Сгруппировать на заданном интервале времени(*сек.*)",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "minimum" : 5,
+            "maximum" : 2678400,
+            "default" : 60
+          }
+        }, {
+          "$ref" : "#/components/parameters/limitParam"
+        }, {
+          "$ref" : "#/components/parameters/fromParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "oneOf" : [ {
+                    "$ref" : "#/components/schemas/RawDataArray"
+                  }, {
+                    "$ref" : "#/components/schemas/GroupedDataArray"
+                  } ]
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Неправильное имя ресурса"
+          },
+          "403" : {
+            "description" : "Невалидный ключ(token) доступа"
+          }
+        },
+        "security" : [ {
+          "Token" : [ ]
+        } ]
+      }
+    },
+    "/market_avg" : {
+      "get" : {
+        "deprecated" : true,
+        "tags" : [ "market" ],
+        "summary" : "Объем \"перелома\" рынка",
+        "description" : "25% от среднего максимумов объема за предыдущие 7 дней. При зменении объема ресурса на рынке выше или ниже этой величины происходит смена направления измения цены(*рост/падение*).",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/resParam"
+        }, {
+          "name" : "day",
+          "in" : "query",
+          "description" : "Получить данные за определенный день.\\\n**Дата** в формате ISO.\n",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "example" : "2021-09-11"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "oneOf" : [ {
+                    "$ref" : "#/components/schemas/AverageData"
+                  }, {
+                    "$ref" : "#/components/schemas/AverageDataArray"
+                  } ]
+                },
+                "examples" : {
+                  "single" : {
+                    "value" : {
+                      "date" : "2021-04-24",
+                      "limit" : 8078441
+                    },
+                    "summary" : "Значение для одного дня"
+                  },
+                  "multiple" : {
+                    "value" : [ {
+                      "date" : "2021-04-03",
+                      "limit" : 3994578
+                    }, {
+                      "date" : "2021-04-04",
+                      "limit" : 3876723
+                    }, {
+                      "date" : "2021-04-05",
+                      "limit" : 3929682
+                    } ],
+                    "summary" : "Массив значений по дням"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "Token" : [ ]
+        } ]
+      }
+    },
+    "/auth" : {
+      "get" : {
+        "tags" : [ "auth" ],
+        "summary" : "Информация по заданному токену",
+        "parameters" : [ {
+          "name" : "token",
+          "in" : "query",
+          "description" : "Идентификатор (*токен*)",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Информация по заданному токену",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AuthInfo"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Заданный токен не найден"
+          }
+        }
+      }
+    }
+  },
+  "servers" : [ {
+    "url" : "https://market.anti3z.ru/api"
+  } ],
+  "components" : {
+    "securitySchemes" : {
+      "Token" : {
+        "type" : "apiKey",
+        "name" : "auth",
+        "in" : "query"
+      }
+    },
+    "schemas" : {
+      "ResName" : {
+        "type" : "string",
+        "enum" : [ "wood", "stone", "food", "horses" ]
+      },
+      "RawDataArray" : {
+        "type" : "array",
+        "items" : {
+          "type" : "object",
+          "properties" : {
+            "date" : {
+              "type" : "string",
+              "format" : "date-time"
+            },
+            "price" : {
+              "type" : "number"
+            },
+            "volume" : {
+              "type" : "integer"
+            }
+          }
+        }
+      },
+      "GroupedDataArray" : {
+        "type" : "array",
+        "items" : {
+          "type" : "object",
+          "properties" : {
+            "date_open" : {
+              "type" : "string",
+              "format" : "date-time"
+            },
+            "date_close" : {
+              "type" : "string",
+              "format" : "date-time"
+            },
+            "price" : {
+              "type" : "number"
+            },
+            "vol_min" : {
+              "type" : "integer"
+            },
+            "vol_max" : {
+              "type" : "integer"
+            },
+            "vol_open" : {
+              "type" : "integer"
+            },
+            "vol_close" : {
+              "type" : "integer"
+            }
+          }
+        }
+      },
+      "AverageData" : {
+        "type" : "object",
+        "properties" : {
+          "date" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "limit" : {
+            "type" : "integer"
+          }
+        }
+      },
+      "AverageDataArray" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/AverageData"
+        }
+      },
+      "AuthInfo" : {
+        "type" : "object",
+        "properties" : {
+          "token" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "VALID", "BANNED" ]
+          },
+          "created" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "status_updated" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "user" : {
+            "type" : "object",
+            "properties" : {
+              "id" : {
+                "type" : "integer"
+              },
+              "first_name" : {
+                "type" : "string"
+              },
+              "last_name" : {
+                "type" : "string"
+              },
+              "username" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "parameters" : {
+      "resParam" : {
+        "name" : "res",
+        "in" : "path",
+        "description" : "Название ресурса",
+        "required" : true,
+        "schema" : {
+          "$ref" : "#/components/schemas/ResName"
+        }
+      },
+      "limitParam" : {
+        "name" : "limit",
+        "in" : "query",
+        "description" : "Ограничить количество выдаваемых записей",
+        "required" : false,
+        "schema" : {
+          "type" : "integer",
+          "minimum" : 1,
+          "maximum" : 50000,
+          "default" : 50000
+        }
+      },
+      "fromParam" : {
+        "name" : "from",
+        "in" : "query",
+        "description" : "Получить данные начиная с указанного времени.\\\nПри *отсутствии* или *не верном формате* параметра выводятся последние записи.\n",
+        "required" : false,
+        "schema" : {
+          "oneOf" : [ {
+            "type" : "string",
+            "format" : "date-time"
+          }, {
+            "type" : "integer",
+            "enum" : [ 0 ]
+          } ]
+        },
+        "examples" : {
+          "date" : {
+            "value" : "2021-09-27T17:50:01",
+            "summary" : "Датавремя в ISO формате"
+          },
+          "zero" : {
+            "value" : 0,
+            "summary" : "Получение данных с самой первой записи"
+          }
+        }
+      }
+    }
+  }
+}
