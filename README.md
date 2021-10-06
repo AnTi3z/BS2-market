@@ -9,6 +9,6 @@
 - uWSGI в качестве WSGI сервера + nginx в качестве проксирующего web-сервера
 - Документация API оформлена в виде OpenAPI 3.0 спецификации (swagger)
 
-API доступен по адресу: https://market.anti3z.ru/api/
-Документация (swagger UI):  https://market.anti3z.ru/doc/
-Пример использования API:  https://market.anti3z.ru/ (фронтенд на JavaScript с использованием библиотеки amCharts)
+API доступен по адресу: https://market.anti3z.ru/api/  
+Документация (swagger UI):  https://market.anti3z.ru/doc/  
+Пример использования API:  https://market.anti3z.ru/ (фронтенд на JavaScript с использованием библиотеки amCharts)  
