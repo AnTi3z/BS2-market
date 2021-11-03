@@ -1,18 +1,16 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from peewee import fn, SQL
 
-from db_models import PriceVolumeData, Resource
+from app.models import PriceVolumeData, Resource
 
 
 def get_raw_data(res_name: str, limit: int, from_datetime: datetime = None):
-    # res_id = Resources.get(name=res_name)
     result = []
     select = PriceVolumeData.select(
         PriceVolumeData.ts,
         PriceVolumeData.price,
         PriceVolumeData.volume
-    # ).where(PriceVolumeData.res == res_id)
     ).join(Resource).where(Resource.name == res_name)
 
     if from_datetime:
@@ -81,13 +79,14 @@ def get_grouped_data(res_name: str, limit: int, group: int, from_datetime: datet
     return result
 
 
-def get_update(from_datetime: datetime):
-    # res_names = {1: 'wood', 2: 'stone', 3: 'food', 4: 'horses'}
-    # Resources.get(id=i)
-    filtred_res = ('wood', 'stone', 'food', 'horses')
-    result = {}
-    for res_name in filtred_res:
-        new_data = get_raw_data(res_name, 10000, from_datetime)
-        if new_data:
-            result[res_name] = new_data
-    return result
+def get_max_volumes(res_name: str, from_date: date, to_date: date):
+    res_id = Resource.get(name=res_name)
+    query = (PriceVolumeData
+             .select(fn.DATE(PriceVolumeData.ts).alias('day'), fn.MAX(PriceVolumeData.volume).alias('max'))
+             .where(PriceVolumeData.res == res_id)
+             .where(fn.DATE(PriceVolumeData.ts) >= from_date)
+             .where(fn.DATE(PriceVolumeData.ts) <= to_date)
+             .group_by(SQL('day'))
+             .order_by(SQL('day'))
+             )
+    return query

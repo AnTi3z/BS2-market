@@ -1,30 +1,9 @@
-import json
-
 from peewee import *
 
-
-with open("config.json") as f:
-    cfg = json.load(f)
-
-_LOGIN = cfg['mysql']['login']
-_PASS = cfg['mysql']['pass']
-
-db = MySQLDatabase('bs_market', autoconnect=False,
-                   user=_LOGIN, password=_PASS,
-                   # host='192.168.100.2', port=3306)
-                   unix_socket="/tmp/mysql.sock")
+from app import db
 
 
-class UnknownField(object):
-    def __init__(self, *_, **__): pass
-
-
-class BaseModel(Model):
-    class Meta:
-        database = db
-
-
-class Resource(BaseModel):
+class Resource(db.Model):
     id = IntegerField(primary_key=True)
     name = CharField(max_length=8, unique=True)
 
@@ -32,7 +11,7 @@ class Resource(BaseModel):
         table_name = 'resources'
 
 
-class PriceVolumeData(BaseModel):
+class PriceVolumeData(db.Model):
     res = ForeignKeyField(column_name='res', field='id', model=Resource)
     ts = DateTimeField()
     price = FloatField()
@@ -43,17 +22,23 @@ class PriceVolumeData(BaseModel):
         table_name = 'price_data'
 
 
-class User(BaseModel):
+class User(db.Model):
     id = IntegerField(primary_key=True)
     first_name = CharField(max_length=64)
     last_name = CharField(max_length=64)
     username = CharField(max_length=32)
 
+    def serialize(self):
+        return {'id': self.id,
+                'first_name': self.first_name,
+                'last_name': self.last_name,
+                'username': self.username}
+
     class Meta:
         table_name = 'tg_users'
 
 
-class TokenStatus(BaseModel):
+class TokenStatus(db.Model):
     id = IntegerField(primary_key=True)
     text = CharField(column_name='status', max_length=10)
 
@@ -61,12 +46,19 @@ class TokenStatus(BaseModel):
         table_name = 'token_status'
 
 
-class Token(BaseModel):
+class Token(db.Model):
     token = FixedCharField(primary_key=True, max_length=16)
     user = ForeignKeyField(column_name='user_id', field='id', model=User)
     status = ForeignKeyField(column_name='status', field='id', model=TokenStatus)
     created = DateTimeField()
     modified = DateTimeField()
+
+    def serialize(self):
+        return {'token': self.token,
+                'status': self.status.text,
+                'created': self.created.isoformat(),
+                'status_updated': self.modified.isoformat(),
+                'user': self.user.serialize()}
 
     class Meta:
         table_name = 'tokens'
