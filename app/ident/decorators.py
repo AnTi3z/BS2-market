@@ -1,12 +1,13 @@
 from flask import request
 
-from .services import check_ident
+from app.models import Token
 
 
 def ident_token_required(func):
     def wrapper(*args, **kwargs):
         ident_token = request.args.get('auth')
-        ident_status = check_ident(ident_token)
+        token = Token.get_by_str(ident_token)
+        ident_status = token.status.text if token else "INVALID"
 
         if ident_status != 'VALID':
             return f"Ident token {ident_status}", 401

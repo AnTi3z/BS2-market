@@ -53,6 +53,10 @@ class Token(db.Model):
     created = DateTimeField()
     modified = DateTimeField()
 
+    @classmethod
+    def get_by_str(cls, token_str):
+        return cls.get_or_none(cls.token == token_str)
+
     def serialize(self):
         return {'token': self.token,
                 'status': self.status.text,
