@@ -3,6 +3,7 @@ import threading
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+# import uwsgi
 
 
 class FileModifiedHandler(FileSystemEventHandler):
@@ -15,15 +16,17 @@ class FileModifiedHandler(FileSystemEventHandler):
 
 
 class UpdateWaiter:
-    def __init__(self):
-        self.new_data_event = threading.Event()
+    def __init__(self, event_obj):
+        self.new_data_event = event_obj
         self.file_observer = Observer()
         self.logger = None
 
     def init_app(self, app):
+        self.logger = app.logger
         self.file_observer.schedule(FileModifiedHandler(self.new_data_event), path=app.config.get('UPDATES_FILE'))
         self.file_observer.start()
-        self.logger = app.logger
+        # uwsgi.add_file_monitor(2, app.config.get('UPDATES_FILE'))
+        # uwsgi.register_signal(2, "", lambda _: self.new_data_event.set())
 
     def update_wait(self):
         self.new_data_event.clear()

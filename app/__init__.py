@@ -2,12 +2,14 @@ from flask import Flask
 from flask_peewee.db import Database
 from app.poll_updates.update_waiter import UpdateWaiter
 # from flask_marshmallow import Marshmallow
+# from gevent.event import Event
+from threading import Event
 
 import config
 
 db = None
 vol_data = None
-updates_waiter = UpdateWaiter()
+updates_waiter = UpdateWaiter(Event())
 # ma = Marshmallow()
 
 
