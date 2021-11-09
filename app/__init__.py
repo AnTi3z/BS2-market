@@ -1,12 +1,13 @@
 from flask import Flask
 from flask_peewee.db import Database
+from app.poll_updates.update_waiter import UpdateWaiter
 # from flask_marshmallow import Marshmallow
-
 
 import config
 
 db = None
 vol_data = None
+updates_waiter = UpdateWaiter()
 # ma = Marshmallow()
 
 
@@ -32,5 +33,6 @@ def create_app(config_class=config.DevConfig):
 
     from app.poll_updates import bp as updates_bp
     app.register_blueprint(updates_bp)
+    updates_waiter.init_app(app)
 
     return app

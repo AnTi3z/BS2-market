@@ -1,7 +1,8 @@
 from app.argparser import get_datetime_arg
 
+from app import updates_waiter
 from app.poll_updates import bp
-from app.poll_updates.services import get_update, update_wait
+from app.poll_updates.services import get_update
 from app.ident.decorators import ident_token_required
 
 
@@ -18,6 +19,6 @@ def handle_updates():
     # if no new data in db then wait for new data
     if not result:
         # db.close()
-        result = update_wait()
+        result = updates_waiter.update_wait()
 
     return result or ""
