@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 from typing import Dict
 
-from .services import get_max_volumes
+from app.market.services import get_max_volumes
 
 DAY_1 = timedelta(days=1)
 DAY_7 = timedelta(days=7)
