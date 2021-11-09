@@ -1,13 +1,13 @@
 from flask import jsonify
 
-from bs_market import app
-from .services import get_raw_data, get_grouped_data
 from app import vol_data
+from app.market import bp
+from app.market.services import get_raw_data, get_grouped_data
 from app.ident.decorators import ident_token_required
 from app.argparser import *
 
 
-@app.route('/api/market')
+@bp.route('/api/market')
 @ident_token_required
 def handle_market():
     res = get_res_arg()
@@ -23,7 +23,7 @@ def handle_market():
     return jsonify(result)
 
 
-@app.route('/api/market_avg')
+@bp.route('/api/market_avg')
 @ident_token_required
 def handle_market_avg():
     res = get_res_arg()
@@ -33,7 +33,7 @@ def handle_market_avg():
     return jsonify(result)
 
 
-@app.route('/api/<res>/raw')
+@bp.route('/api/<res>/raw')
 @ident_token_required
 def handle_raw(res):
     check_res_arg(res)
@@ -44,7 +44,7 @@ def handle_raw(res):
     return {res: result}
 
 
-@app.route('/api/<res>/grouped')
+@bp.route('/api/<res>/grouped')
 @ident_token_required
 def handle_grouped(res):
     check_res_arg(res)
@@ -56,7 +56,7 @@ def handle_grouped(res):
     return {res: result}
 
 
-@app.route('/api/<res>/average')
+@bp.route('/api/<res>/average')
 @ident_token_required
 def handle_average(res):
     check_res_arg(res)

@@ -1,11 +1,11 @@
 from app.argparser import get_datetime_arg
 
-from app import app
-from .services import get_update, update_wait
+from app.poll_updates import bp
+from app.poll_updates.services import get_update, update_wait
 from app.ident.decorators import ident_token_required
 
 
-@app.route('/api/updates')
+@bp.route('/api/updates')
 @ident_token_required
 def handle_updates():
     from_datetime = get_datetime_arg()

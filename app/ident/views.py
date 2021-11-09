@@ -1,10 +1,10 @@
 from flask import request
 
-from bs_market import app
+from app.ident import bp
 from app.models import Token
 
 
-@app.route('/api/auth')
+@bp.route('/api/auth')
 def handle_auth():
     token = request.args.get('token') or request.args.get('auth')
     ident_info = Token.get_by_str(token)

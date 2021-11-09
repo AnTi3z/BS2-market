@@ -6,7 +6,7 @@ import gevent.event
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-from app import app
+from bs_market import app
 from app.market.services import get_raw_data
 
 
