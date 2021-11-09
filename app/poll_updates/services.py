@@ -12,8 +12,7 @@ from app.market.services import get_raw_data
 
 class FileModifiedHandler(FileSystemEventHandler):
     def on_modified(self, event):
-        if not event.is_direcory:
-            new_data_event.set()
+        new_data_event.set()
 
 
 new_data_event = gevent.event.Event()
