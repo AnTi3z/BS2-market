@@ -3,7 +3,7 @@ from flask import current_app
 from app.argparser import get_datetime_arg
 from app.poll_updates import bp
 from app.poll_updates.services import get_update
-from app.poll_updates.update_waiter import UpdateWaiter
+from app.poll_updates.update_waiter import update_wait
 from app.ident.decorators import ident_token_required
 
 
@@ -19,7 +19,6 @@ def handle_updates():
 
     # if no new data in db then wait for new data
     if not result:
-        updates_waiter = UpdateWaiter(current_app)
-        result = updates_waiter.update_wait()
+        result = update_wait(current_app)
 
     return result or ""

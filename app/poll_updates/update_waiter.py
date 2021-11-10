@@ -17,25 +17,19 @@ class FileModifiedHandler(FileSystemEventHandler):
         self._event_obj.set()
 
 
-class UpdateWaiter:
-    def __init__(self, current_app):
-        # self.current_app = current_app
-        self.new_data_event = Event()
-        self.file_observer = Observer()
-        self.file_observer.schedule(FileModifiedHandler(self.new_data_event), path=current_app.config.get('UPDATES_FILE'))
-        self.file_observer.start()
+def update_wait(app, poll_time=30.0):
+    updates_file = app.config.get('UPDATES_FILE')
+    if not updates_file:
+        return None
 
-    def update_wait(self):
-        self.new_data_event.clear()
-        # self.current_app.logger.debug(f"new data wait in {threading.current_thread()}")
-        result = None
-        if self.new_data_event.wait(30.0):
-            # self.current_app.logger.debug(f"new data catched in {threading.current_thread()}")
-            with open("/tmp/bs_market_updates") as f:
-                result_str = f.read()
-            result = json.loads(result_str, parse_float=lambda x: round(float(x), 3))
-        else:
-            # self.current_app.logger.debug(f"new data timeout in {threading.current_thread()}")
-            pass
+    new_data_event = Event()
+    file_observer = Observer()
+    file_observer.schedule(FileModifiedHandler(new_data_event), path=updates_file)
+    file_observer.start()
 
-        return result
+    if new_data_event.wait(poll_time):
+        with open(updates_file) as f:
+            result_str = f.read()
+        return json.loads(result_str, parse_float=lambda x: round(float(x), 3))
+    else:
+        return None
