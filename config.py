@@ -16,7 +16,7 @@ class Config:
     }
     JSON_SORT_KEYS = False
     UPDATES_FILE = "/tmp/bs_market_updates"
-    DEBUG = False
+    DEBUG = True
     LOG_LEVEL = logging.ERROR
 
 
