@@ -9,6 +9,8 @@ DAY_7 = timedelta(days=7)
 
 
 class CachedData:
+    # TODO: Not thread safe
+    # TODO: Store avg values in DB
     def __init__(self, res: str):
         self.res: str = res
         self._max: Dict[date, int] = {}
