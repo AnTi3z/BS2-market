@@ -1,7 +1,6 @@
 from flask import jsonify
 
-from app import vol_data
-from app.market import bp
+from app.market import bp, vol_data
 from app.market.services import get_raw_data, get_grouped_data
 from app.ident.decorators import ident_token_required
 from app.argparser import *
