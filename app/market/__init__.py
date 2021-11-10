@@ -1,5 +1,5 @@
 from flask import Blueprint
-from cached_dataset import VolDataset
+from app.market.cached_dataset import VolDataset
 
 bp = Blueprint('market', __name__)
 vol_data = VolDataset()
