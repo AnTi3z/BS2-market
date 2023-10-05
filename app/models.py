@@ -15,7 +15,7 @@ class PriceVolumeData(db.Model):
     res = ForeignKeyField(column_name='res', field='id', model=Resource)
     ts = DateTimeField()
     price = FloatField()
-    volume = IntegerField()
+    volume = BigIntegerField()
 
     class Meta:
         primary_key = CompositeKey('res', 'ts')
